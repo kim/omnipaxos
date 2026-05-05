@@ -299,14 +299,24 @@ where
 
     /// Moves outgoing messages from this server into the buffer. The messages should then be sent via the network implementation.
     pub fn take_outgoing_messages(&self, buffer: &mut Vec<Message<T>>) {
-        self.seq_paxos.write().unwrap().take_outgoing_msgs(buffer);
-        buffer.extend(
+        self.take_outgoing_messages_paxos(buffer);
+        self.take_outgoing_messages_ble(buffer);
+    }
+
+    /// Drain pending outgoing sequence paxos messages into the provided buffer.
+    pub fn take_outgoing_messages_paxos(&self, buf: &mut Vec<Message<T>>) {
+        self.seq_paxos.write().unwrap().take_outgoing_msgs(buf);
+    }
+
+    /// Drain pending outgoing BLE messages into the provided buffer.
+    pub fn take_outgoing_messages_ble(&self, buf: &mut Vec<Message<T>>) {
+        buf.extend(
             self.ble
                 .write()
                 .unwrap()
                 .outgoing_mut()
                 .drain(..)
-                .map(|b| Message::BLE(b)),
+                .map(Message::BLE),
         );
     }
 
