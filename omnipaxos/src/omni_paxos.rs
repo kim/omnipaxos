@@ -440,7 +440,7 @@ where
     /*** BLE calls ***/
     /// Update the custom priority used in the Ballot for this server. Note that changing the
     /// priority triggers a leader re-election.
-    pub fn set_priority(&mut self, p: u32) {
+    pub fn set_priority(&self, p: u32) {
         self.ble.write().unwrap().set_priority(p)
     }
 
